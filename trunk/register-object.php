@@ -1,40 +1,17 @@
 <?php
-/*
-Copyright 2011-2013 by Gwyneth Llewelyn. All rights reserved.
-
-Redistribution and use in source and binary forms, with or without modification, are
-permitted provided that the following conditions are met:
-
-   1. Redistributions of source code must retain the above copyright notice, this list of
-      conditions and the following disclaimer.
-
-   2. Redistributions in binary form must reproduce the above copyright notice, this list
-      of conditions and the following disclaimer in the documentation and/or other materials
-      provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY GWYNETH LLEWELYN ``AS IS'' AND ANY EXPRESS OR IMPLIED
-WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
-FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL GWYNETH LLEWELYN OR
-CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-The views and conclusions contained in the software and documentation are those of the
-authors and should not be interpreted as representing official policies, either expressed
-or implied, of Gwyneth Llewelyn.
-
----
-
-Based on my own code for Online Status inSL, http://wordpress.org/extend/plugins/online-status-insl/
-
-*/
+/**
+ * Copyright 2011-2023 by Gwyneth Llewelyn. All rights reserved.
+ *
+ * Released under a BSD-3-clause license.
+ *
+ *
+ * Based on my own code for Online Status inSL, https://www.wordpress.org/plugins/online-status-insl/
+ *
+ **/
 
 // This gets called from a Second Life object when registering an object or when it changes status
 // Most of the data will come from the headers (e.g. avatar UUID)
-// PermURL is the SL-assigned URL during registration to call the object back 
+// PermURL is the SL-assigned URL during registration to call the object back
 // Our script will also send object_version
 
 require_once('../../../wp-config.php');
@@ -78,11 +55,11 @@ if (count($settings['allowed_avatars']) > 0)
 if (count($settings['allowed_simdns']) > 0)
 {
 	$passThru = false;
-	
+
 	// check IP address and DNS name...
 	$addr = $_SERVER['REMOTE_ADDR'];
 	$host = gethostbyaddr($_SERVER['REMOTE_ADDR']);
-	
+
 	foreach($settings['allowed_simdns'] as $dnsEntry)
 	{
 		// trivial case first; the address or hostname matches
@@ -100,15 +77,15 @@ if (count($settings['allowed_simdns']) > 0)
 			$passThru = true;
 			break;
 		}
-		
+
 		// do the same for IP addresses
 		if (substr_compare($addr, $dnsEntry, -strlen($dnsEntry)) == 0)
 		{
 			$passThru = true;
 			break;
-		}		
+		}
 	}
-	
+
 	if (!$passThru)
 	{
 		header("HTTP/1.0 403 Forbidden");
@@ -131,22 +108,22 @@ if ($permURL = $_REQUEST['PermURL']) // assume it's a registration
 	$objectName = $_SERVER['HTTP_X_SECONDLIFE_OBJECT_NAME']; // to do some fancy editing
 	$objectRegion = $_SERVER['HTTP_X_SECONDLIFE_REGION'];
 	$objectLocalPosition = $_SERVER['HTTP_X_SECONDLIFE_LOCAL_POSITION'];
-	
+
 	// change what we need to track this object
 	$objects[$objectKey] = array(
-		"PermURL"				=> $_REQUEST['PermURL'], 
-		"avatarKey"				=> $avatarKey, 
-		"avatarDisplayName" 	=> $avatarDisplayName, 
-		"objectVersion" 		=> $objectVersion, 
-		"objectKey"				=> $objectKey, 
-		"objectName"			=> $objectName, 
-		"objectRegion"			=> $objectRegion, 
+		"PermURL"				=> $_REQUEST['PermURL'],
+		"avatarKey"				=> $avatarKey,
+		"avatarDisplayName" 	=> $avatarDisplayName,
+		"objectVersion" 		=> $objectVersion,
+		"objectKey"				=> $objectKey,
+		"objectName"			=> $objectName,
+		"objectRegion"			=> $objectRegion,
 		"objectLocalPosition"	=> $objectLocalPosition,
 		"timeStamp"				=> time()
 	);
-	
+
 	update_option('sl_user_create_objects', $objects);
-	
+
 	header("HTTP/1.0 200 OK");
 	header("Content-type: text/plain; charset=utf-8");
 	printf(__("PermURL <%s> saved for object '%s' (%s)", 'sl-user-create'), $objects[$objectKey]["PermURL"], $objectName, $objectKey);
