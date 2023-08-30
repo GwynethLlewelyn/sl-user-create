@@ -179,11 +179,12 @@ if (!current_user_can( 'manage_options' )) {
 				print_r($objects, true) . "</pre><br />\n";
 			*/
 			// update options with new settings; gets serialized automatically
-			if (!update_option('sl_user_create_objects', $objects))
-				$statusMessage .= __("<strong>Not saved!!</strong><br \>\n", 'sl-user-create');
-
+			if ( !update_option( 'sl_user_create_objects', $objects) )
+			{
+				$statusMessage .= __( "<strong>Not saved!!</strong><br \>\n", 'sl-user-create' );
+			}
 			// emit "updated" class showing we have deleted some things
-			if ($statusMessage)
+			if ( $statusMessage)
 			{
 ?>
 			<div id="message-updated" class="updated"><p><?php _e("Online registration objects <strong>deleted</strong>", 'sl-user-create'); ?><br /><br /><?php echo $statusMessage; ?>
@@ -192,7 +193,7 @@ if (!current_user_can( 'manage_options' )) {
 			} // endif ($statusMessage)
 		} // endif ($_POST["sl_user_create_form"])
 
-		if (is_array($objects) && count($objects) > 0)
+		if ( is_array( $objects ) && count( $objects ) > 0 )
 		{
 ?>
 <h2><?php _e("Current registration objects being tracked", 'sl-user-create'); ?>:</h2>
@@ -218,6 +219,12 @@ if (!current_user_can( 'manage_options' )) {
 <?php
 		foreach ($objects as $oneRegObject)
 		{
+			// deal with unknown variables for PHP 8.X
+			if ( empty( $alternate ) )
+			{
+				/** @var bool */
+				$alternate = false;
+			}
 	?>
 	<tr class="format-default <?php echo ($alternate ? "" : "alternate"); $alternate = !$alternate; ?>">
 		<td><?php echo $oneRegObject["objectName"]; ?></td>
