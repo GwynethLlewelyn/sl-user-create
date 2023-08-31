@@ -14,6 +14,8 @@ Need to automatically register new users on a WordPress site with their Second L
 
 New users will receive a password via the Second Life Instant Messaging Service, as well as a link to tell them the URL for your site. The new profile will include their avatar name as a login and their SL profile picture (if available via Web) will become their WordPress profile picture. If you have some special meta fields enabled on your WordPress profile, they will be filled in with some data from SL as well (e.g. location).
 
+Thanks to DALL-E by OpenAI for the cute logo.
+
 == Installation ==
 
 1. After installing the plugin, if you're using a cache manager (e.g. W3 Total Cache) make sure you add **register-avatar\.php** and **register-object\.php** to the exception list, or you'll get multiple registrations with the same name!
@@ -74,56 +76,7 @@ Also, the auto-deletion feature might not work well under OpenSimulator (i.e. it
 = 0.2.6 =
 * Polishing, to better comply to WordPress style standards
 
-= 0.2.5 =
-* Fixed a security issue: non-admin users could see the LSL script
-
-= 0.2.4 =
-* Fixed missing <?php (was just <? )
-* Added some extra validation code for usernames. When the SL name -> WP username conversion fails, it aborts
-* Changed the way that the hostname is figured out for the LSL script
-* Started some development to allow users to add their email addresses from within SL
-* Updated FAQ!
-* moved banner and screenshots to assets; trunk is now empty and "stable tags" is used instead
-
-= 0.2.3 =
-* Added llStringTrim() to the LSL script after receiving a remote message. Thanks to ANSI Soderstrom for spotting that this sometimes failed due to extra space on some web servers.
-
-= 0.2.2 =
-* **functions.php** was missing from the distribution! Thanks to ANSI Soderstrom for pointing it out to me.
-
-= 0.2.1 =
-* Add option to ignore signature (less safer, but good for debugging/testing purposes)
-
-= 0.2.0 =
-
-* Security configuration module implemented: limit avatars to register objects with our site; ban avatars from registering with our site; limit hostnames/IP addresses
-
-= 0.1.6 =
-
-* Fixed minor script issues to work with OpenSimulator 0.7.0.2+
-
-= 0.1.5 =
-
-* Users already registered, when touching the object again, will now get a popup allowing them to reset the password instead of silently failing to register them again
-* Now new users will have an email address with the site's domain name appended. This might be useful for some services that will provide SL residents with mailboxes
-* Updated registration object timestamp every time a new avatar registers or changes their password
-
-= 0.1.0 =
-
-* Added required screenshots for WP
-* Retrieves avatar profile information from world.secondlife.com/resident/<AVATAR UUID> and puts it into WP profile
-* Simplified admin page: now when deleting an object, it also sends a llDie() to it
-* Added instructions tab
-* Translations for Portuguese included
-
-= 0.0.5 =
-* Avatars get registered with fake email address, because logins wouldn't work if they hadn't one
-* Registration IM now shows URL of the website they've registered to
-* Added two additional strings to allow for minimal security; they still cannot be saved thanks to a nasty bug...
-* Added support to multisite installs (via a meta key)
-
-= 0.0.1 =
-* First release. Lots of code borrowed from my other SL plugin, [Online Status inSL](https://wordpress.org/plugins/online-status-insl/)
+The remaining (historical) changelog is kept on the file `changelog.txt`, as per the WP recommendations.
 
 == Upgrade Notice ==
 
