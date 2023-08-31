@@ -6,7 +6,7 @@ Version: 0.2.5
 License: Simplified BSD License
 Author: Gwyneth Llewelyn
 Author URI: http://gwynethllewelyn.net/
-Description: Allows Second Life® users to get automatically registered to a WordPress site by touching an object with a special script. 
+Description: Allows Second Life® users to get automatically registered to a WordPress site by touching an object with a special script.
 
 Copyright 2011-2013 by Gwyneth Llewelyn. All rights reserved.
 
@@ -103,9 +103,9 @@ if (!current_user_can( 'manage_options' )) {
 <?php $tab = ( isset( $_GET['tab'] ) ? $_GET['tab'] : 'main' ); ?>
 <h2><?php _e('SL User Create', 'sl-user-create'); ?></h2>
 
-<?php 
-	if ($tab == 'main') 
-	{ 
+<?php
+	if ($tab == 'main')
+	{
 		// automated settings. This uses the "modern" way of setting things,
 		// but for now it only applies to the secrets
 
@@ -122,34 +122,34 @@ if (!current_user_can( 'manage_options' )) {
 			check_admin_referer('delete-online-registration-objects');
 
 			// loop through settings to delete; we have objectKeys for each
-			
-			$statusMessage = ""; // add to this string as we find objects to delete	
+
+			$statusMessage = ""; // add to this string as we find objects to delete
 
 			foreach ($objects as $registrationObjects)
 			{
 				if (isset($_POST["deletedRegistrationObjects"]) && in_array($registrationObjects["objectKey"], $_POST["deletedRegistrationObjects"]))
 				{
-					$statusMessage .= __("Deleting registration object: ", 'sl-user-create') . $registrationObjects["objectName"] . 
+					$statusMessage .= __("Deleting registration object: ", 'sl-user-create') . $registrationObjects["objectName"] .
 						" (" . $registrationObjects["objectKey"] . "), " .
 						__("Owned by ", 'sl-user-create') . $registrationObjects["avatarDisplayName"] . ", " .
 						__("Location: ", 'sl-user-create') . $registrationObjects["objectRegion"] .
 						"<br />\n";
 					unset($objects[$registrationObjects["objectKey"]]);
-				
+
 					$statusMessage .= __("Sending llDie() to registration object: ", 'sl-user-create');
-											
+
 					// call the PermURL for this object
 
 					$body = array('command' => 'die');
-					
+
 					$url = $registrationObjects['PermURL'];
 					$request = new WP_Http;
-					$result = $request->request($url, 
+					$result = $request->request($url,
 						array('method' => 'POST', 'body' => $body));
 					// test $result['response'] and if OK do something with $result['body']
-					
+
 					if (!is_wp_error($result))
-					{			
+					{
 						if ($result['response']['code'] == 200)
 						{
 							$statusMessage .= __("OK", 'sl-user-create') . " - " . $result['body'];
@@ -173,7 +173,7 @@ if (!current_user_can( 'manage_options' )) {
 			// update options with new settings; gets serialized automatically
 			if (!update_option('sl_user_create_objects', $objects))
 				$statusMessage .= __("<strong>Not saved!!</strong><br \>\n", 'sl-user-create');
-			
+
 			// emit "updated" class showing we have deleted some things
 			if ($statusMessage)
 			{
@@ -183,7 +183,7 @@ if (!current_user_can( 'manage_options' )) {
 <?php
 			} // endif ($statusMessage)
 		} // endif ($_POST["sl_user_create_form"])
- 
+
 		if (is_array($objects) && count($objects) > 0)
 		{
 ?>
@@ -216,14 +216,14 @@ if (!current_user_can( 'manage_options' )) {
 		<td><?php echo $oneRegObject["objectKey"]; ?></td>
 		<td><?php echo $oneRegObject["objectVersion"]; ?></td>
 		<td>
-<?php 
+<?php
 			// parse name of the region and coordinates to create a link to maps.secondlife.com
 			$regionName = substr($oneRegObject["objectRegion"], 0, strpos($oneRegObject["objectRegion"], "(") - 1);
 			$coords = trim($oneRegObject["objectLocalPosition"], "() \t\n\r");
 			$xyz = explode(",", $coords);
-			
+
 			printf('<a href="http://maps.secondlife.com/secondlife/%s/%F/%F/%F?title=%s&amp;msg=%s&amp;img=%s" target="_blank">%s (%d,%d,%d)</a>',
-				$regionName, $xyz[0], $xyz[1], $xyz[2], 
+				$regionName, $xyz[0], $xyz[1], $xyz[2],
 				rawurlencode($oneRegObject["objectName"]),
 				rawurlencode(__("Registration object for ", 'sl-user-create') . home_url()),
 				rawurlencode("http://s.wordpress.org/about/images/logos/wordpress-logo-stacked-rgb.png"),
@@ -239,7 +239,7 @@ if (!current_user_can( 'manage_options' )) {
 		<td><input type="checkbox" name="deletedRegistrationObjects[]" value="<?php echo $oneRegObject["objectKey"]; ?>" /></td>
 	</tr>
 <?php
-		} // end foreach	
+		} // end foreach
 ?>
 	</tbody>
 </table>
@@ -284,31 +284,31 @@ if (!current_user_can( 'manage_options' )) {
 <?php
 	}
 } // end sl_user_create_menu()
-	
+
 // Add a settings group, which hopefully makes it easier to delete later on
 function sl_user_create_register_settings()
 {
 	// main (just shows script)
 	add_settings_section( 'sl_user_create_main_section', __('Script', 'sl-user-create'), 'sl_user_create_main_section_text', 'sl_user_create-main');
 	add_settings_field( 'text_area', __('LSL Script', 'sl-user-create'), 'sl_user_create_text_area', 'sl_user_create-main', 'sl_user_create_main_section');
-	
+
 	// security (shows secrets and lists avatar names & sims that are allowed)
 	register_setting('sl_user_create_settings', 'sl_user_create_settings', 'sl_user_create_validate');
-	
-	// it's a huge serialised array for now, stored as a WP option in the database; 
+
+	// it's a huge serialised array for now, stored as a WP option in the database;
 	//	 if performance drops, this might change in the future
-	
+
 	add_settings_section( 'sl_user_create_security_section', __('Security', 'sl-user-create'), 'sl_user_create_security_section_text', 'sl_user_create');
 	add_settings_field( 'secret', __('Secret string', 'sl-user-create'), 'sl_user_create_secret', 'sl_user_create', 'sl_user_create_security_section');
 	add_settings_field( 'secret_number', __('Secret number', 'sl-user-create'), 'sl_user_create_secret_number', 'sl_user_create', 'sl_user_create_security_section');
 	add_settings_field( 'disable_signature', __('Disable Signature', 'sl-user-create'), 'sl_user_create_disable_signature', 'sl_user_create', 'sl_user_create_security_section');
 	add_settings_field( 'allowed_avatars', __('Allowed avatars (for registration objects)', 'sl-user-create'), 'sl_user_create_allowed_avatars', 'sl_user_create', 'sl_user_create_security_section');
 	add_settings_field( 'banned_avatars', __('Banned avatars (from registering to the site)', 'sl-user-create'), 'sl_user_create_banned_avatars', 'sl_user_create', 'sl_user_create_security_section');	add_settings_field( 'allowed_simdns', __('Allowed simulator DNS entries', 'sl-user-create'), 'sl_user_create_allowed_simdns', 'sl_user_create', 'sl_user_create_security_section');
-		
+
 	// Instructions
 	add_settings_section( 'sl_user_create_instructions_section', __('Instructions', 'sl-user-create'), 'sl_user_create_instructions_section_text', 'sl_user_create-instructions');
 
-	// Registration objects - separate setting because it wreaks havoc otherwise 
+	// Registration objects - separate setting because it wreaks havoc otherwise
 	register_setting('sl_user_create_objects', 'sl_user_create_objects');
 
 } // end sl_user_create_register_settings()
@@ -327,38 +327,38 @@ function sl_user_create_add_defaults()
 			'allowed_simdns' => array('lindenlab.com')			// DNS/IP addresses allowed to run script (empty means all) - start just with LL's grid for security reasons
 		);
 	}
-	
+
 	// Figure out plugin version
 	$plugin_data = get_plugin_data( __FILE__ );
 
 	$sl_user_create_settings['plugin_version'] = $plugin_data['Version'];
-	
-	update_option('sl_user_create_settings', $sl_user_create_settings); 
+
+	update_option('sl_user_create_settings', $sl_user_create_settings);
 } // end sl_user_create_add_defaults()
 
 function sl_user_create_validate($input)
 {
 	// no output if things get changed because the Settings API doesn't support error messages yet
 	$mysettings = get_option('sl_user_create_settings');
-	
+
 	if (!isset($input['secret']) || strlen($input['secret']) < 4)
 	{
 		$mysettings['secret'] = wp_generate_password(36, false);
 	}
 	else $mysettings['secret'] = $input['secret'];
- 	
+
  	if (!isset($input['secret_number']) || strlen($input['secret_number']) != 4 || !is_numeric($input['secret_number']))
 	{
 		$mysettings['secret_number'] = date("dm");
  	}
  	else $mysettings['secret_number'] = $input['secret_number'];
- 	
+
  	if (!isset($input['disable_signature']))
  	{
  		$mysettings['disable_signature'] = false;
  	}
  	else $mysettings['disable_signature'] = $input['disable_signature'];
- 	
+
  	if (!isset($input['plugin_version']))
  	{
 	 	$plugin_data = get_plugin_data( __FILE__ );
@@ -369,19 +369,19 @@ function sl_user_create_validate($input)
 	// Parse textareas, allowing for some flexibility
 	// First clean up the avatars allowed to have registration objects for us
 	$mysettings['allowed_avatars'] = preg_split("/[\r\n,]+/", wp_filter_nohtml_kses($input['allowed_avatars']), -1, PREG_SPLIT_NO_EMPTY);
- 		
+
 	if (PREG_NO_ERROR != preg_last_error())
 		$mysettings['allowed_avatars'] = array($input['allowed_avatars']);
 
 	// This is for avatars banned from our site
 	$mysettings['banned_avatars'] = preg_split("/[\r\n,]+/", wp_filter_nohtml_kses($input['banned_avatars']), -1, PREG_SPLIT_NO_EMPTY);
- 		
+
 	if (PREG_NO_ERROR != preg_last_error())
 		$mysettings['banned_avatars'] = array($input['banned_avatars']);
 
 	// Now clean up the simulator DNS entries
 	$mysettings['allowed_simdns'] = preg_split("/[\r\n,]+/", wp_filter_nohtml_kses($input['allowed_simdns']), -1, PREG_SPLIT_NO_EMPTY);
- 		
+
 	if (PREG_NO_ERROR != preg_last_error())
 		$mysettings['allowed_simdns'] = array($input['allowed_simdns']);
 	// we should do a check to see if each DNS entry is valid, but we'll ignore that
@@ -490,27 +490,27 @@ default
         llSetText("Registering with your blog at " + http_host + "\nand requesting PermURL from SL...", <0.8, 0.8, 0.1>, 1.0);
         // llMinEventDelay(2.0); // breaks on OpenSim
         llRequestURL();     // this sets the object up to accept external HTTP-in calls
-    }    
+    }
 
     on_rez(integer startParam)
     {
         llResetScript();
     }
-    
+
     touch_start(integer howmany)  // Allow owner to reset this
     {
         llSetText("Sending registration request to " + http_host + "...", <0.6, 0.6, 0.1>, 1.0);
 
         string regAvatarName = llKey2Name(llDetectedKey(0));
         string regAvatarKey = llDetectedKey(0);
-        string message = 
+        string message =
             "avatar_name=" + llEscapeURL(regAvatarName) +
             "&avatar_key=" + llEscapeURL(regAvatarKey) +
             "&signature=" + llMD5String((string)llGetKey() + secret, secretNumber);
             // llOwnerSay("DEBUG: Message to send to blog is: " + message);
         webResponse = llHTTPRequest(http_host + "/wp-content/plugins/sl-user-create/register-avatar.php",
-            [HTTP_METHOD, "POST", HTTP_MIMETYPE, "application/x-www-form-urlencoded"], 
-            message);       
+            [HTTP_METHOD, "POST", HTTP_MIMETYPE, "application/x-www-form-urlencoded"],
+            message);
     }
 
     changed(integer what)
@@ -554,7 +554,7 @@ default
                 key IMuser = llList2Key(result, 0);
                 string command = llList2String(result, 1);
                 string msg = llList2String(result, 2);
-                
+
                 if (command == "fail")
                 {
                     llSetTimerEvent(60.0);
@@ -574,29 +574,29 @@ default
                 llOwnerSay("Avatar NOT registered. Request to WordPress site returned " + (string)status + "; error message: " + body);
             }
         }
-        llSetText("", <0.0, 0.0, 0.0>, 1.0);  
+        llSetText("", <0.0, 0.0, 0.0>, 1.0);
     }
 
     listen(integer channel, string name, key id, string message)
     {
         llSetText("Sending password reset request to " + http_host + "...", <0.6, 0.6, 0.1>, 1.0);
-        string msg = 
+        string msg =
             "avatar_name=" + llEscapeURL(name) +
             "&avatar_key=" + llEscapeURL(id) +
             "&password=true" +
             "&signature=" + llMD5String((string)llGetKey() + secret, secretNumber);
             // llOwnerSay("DEBUG: Message to send to blog is: " + msg);
         webResponse = llHTTPRequest(http_host + "/wp-content/plugins/sl-user-create/register-avatar.php",
-            [HTTP_METHOD, "POST", HTTP_MIMETYPE, "application/x-www-form-urlencoded"], 
+            [HTTP_METHOD, "POST", HTTP_MIMETYPE, "application/x-www-form-urlencoded"],
             msg);
     }
-            
+
     timer()
     {
         llListenRemove(listener);
         llSetTimerEvent(0.0);
     }
-            
+
     // These are requests made from our blog to this object
     http_request(key id, string method, string body)
     {
@@ -605,14 +605,14 @@ default
             llSetText("Sending PermURL to blog...", <0.6, 0.6, 0.1>, 1.0);
 
             string avatarName = llKey2Name(llGetOwner());
-            string message = 
+            string message =
                 "object_version=" + llEscapeURL(objectVersion) +
                 "&PermURL=" + llEscapeURL(body) +
                 "&signature=" + llMD5String((string)llGetKey() + secret, secretNumber);
             // llOwnerSay("DEBUG: Message to send to blog is: " + message);
             registrationResponse = llHTTPRequest(http_host + "/wp-content/plugins/sl-user-create/register-object.php",
-                [HTTP_METHOD, "POST", HTTP_MIMETYPE, "application/x-www-form-urlencoded"], 
-                message);        
+                [HTTP_METHOD, "POST", HTTP_MIMETYPE, "application/x-www-form-urlencoded"],
+                message);
         }
         else if (method == "POST" || method == "GET")
         {
@@ -623,7 +623,7 @@ default
             else
             {
                 list params = llParseStringKeepNulls(body, ["&", "="], []);
-    
+
                 if (llList2String(params, 0) == "command" && llList2String(params, 1) == "die") {
                     llHTTPResponse(id, 200, "Attempting to kill object in-world");
                     llDie();
@@ -634,8 +634,8 @@ default
                     llHTTPResponse(id, 403, "Command not found");
                 }
             }
-        } 
-    }     
+        }
+    }
 }
 </textarea>
 <?php
@@ -675,7 +675,7 @@ function sl_user_create_instructions_section_text()
  	echo '</p><p>';
  	_e('From 0.2.0 onwards there is a security page which allows a few options to limit access from potential hackers.', 'sl-user-create');
  	echo '</p>';
- 	
+
 } // end sl_user_create_instructions_section_text()
 
 register_activation_hook(__FILE__, 'sl_user_create_add_defaults');
