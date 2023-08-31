@@ -46,3 +46,4 @@ package-lock.json
 wordpress-stubs.php
 phpcs.xml
 phpmd.xml
+.github
